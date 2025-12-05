@@ -1,6 +1,6 @@
 package com.arnor4eck.ShortLinks.repository;
 
-import com.arnor4eck.ShortLinks.entity.ShortUrl;
+import com.arnor4eck.ShortLinks.entity.short_url.ShortUrl;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

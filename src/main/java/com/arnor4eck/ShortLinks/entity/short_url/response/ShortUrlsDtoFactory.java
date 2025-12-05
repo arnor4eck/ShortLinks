@@ -1,7 +1,7 @@
-package com.arnor4eck.ShortLinks.entity.response;
+package com.arnor4eck.ShortLinks.entity.short_url.response;
 
-import com.arnor4eck.ShortLinks.entity.ShortUrlDto;
-import com.arnor4eck.ShortLinks.entity.ShortUrl;
+import com.arnor4eck.ShortLinks.entity.short_url.ShortUrl;
+import com.arnor4eck.ShortLinks.entity.short_url.ShortUrlsConfig;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,11 +1,11 @@
 package com.arnor4eck.ShortLinks;
 
-import com.arnor4eck.ShortLinks.controller.api.ApiController;
-import com.arnor4eck.ShortLinks.entity.CreateShortUrlRequest;
-import com.arnor4eck.ShortLinks.entity.ShortUrl;
-import com.arnor4eck.ShortLinks.entity.ShortUrlDto;
-import com.arnor4eck.ShortLinks.entity.response.ShortUrlsConfig;
-import com.arnor4eck.ShortLinks.entity.response.ShortUrlsDtoFactory;
+import com.arnor4eck.ShortLinks.controller.ApiController;
+import com.arnor4eck.ShortLinks.entity.short_url.request.CreateShortUrlRequest;
+import com.arnor4eck.ShortLinks.entity.short_url.ShortUrl;
+import com.arnor4eck.ShortLinks.entity.short_url.response.ShortUrlDto;
+import com.arnor4eck.ShortLinks.entity.short_url.response.ShortUrlsDtoFactory;
+import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = {ApiController.class})
+@AutoConfigureMockMvc(addFilters = false) // отключение фильтров безопасности
 class ApiControllerTest {
     @Autowired
     MockMvc mockMvc;
@@ -40,6 +41,12 @@ class ApiControllerTest {
 
     @MockitoBean
     ShortUrlsDtoFactory shortUrlsDtoFactory;
+
+    @MockitoBean
+    UserRepository userRepository;
+
+    @MockitoBean
+    PasswordEncoder passwordEncoder;
 
     ObjectMapper mapper;
 

@@ -1,11 +1,10 @@
 package com.arnor4eck.ShortLinks.service;
 
-import com.arnor4eck.ShortLinks.entity.CreateShortUrlRequest;
-import com.arnor4eck.ShortLinks.entity.ShortUrl;
+import com.arnor4eck.ShortLinks.entity.short_url.request.CreateShortUrlRequest;
+import com.arnor4eck.ShortLinks.entity.short_url.ShortUrl;
 import com.arnor4eck.ShortLinks.repository.ShortUrlRepository;
 import com.arnor4eck.ShortLinks.utils.HashGenerator;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

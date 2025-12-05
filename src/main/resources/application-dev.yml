@@ -14,7 +14,7 @@ spring: # $env:SPRING_PROFILES_ACTIVE = "dev"
   h2:
     console:
       enabled: true
-      path: /h2-console
+      path: /h2_console
 
 url:
   base: "http://localhost:8080/"
