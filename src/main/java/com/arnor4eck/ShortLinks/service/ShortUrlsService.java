@@ -26,4 +26,8 @@ public class ShortUrlsService {
                         .expiresAt(request.daysUrlAlive() == null ? null : LocalDate.now().plusDays(request.daysUrlAlive()))
                         .build()));
     }
+
+    public ShortUrl getByShortCode(String shortCode){
+        return shortUrlRepository.getByShortCode(shortCode);
+    }
 }

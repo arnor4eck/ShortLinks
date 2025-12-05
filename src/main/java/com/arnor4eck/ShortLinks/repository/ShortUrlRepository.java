@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ShortUrlRepository extends CrudRepository<ShortUrl, Long> {
     Optional<ShortUrl> getByOriginalUrl(String originalUrl);
+    ShortUrl getByShortCode(String shortCode);
 }

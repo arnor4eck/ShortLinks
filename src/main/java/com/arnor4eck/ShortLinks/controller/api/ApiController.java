@@ -1,6 +1,7 @@
 package com.arnor4eck.ShortLinks.controller.api;
 
 import com.arnor4eck.ShortLinks.entity.CreateShortUrlRequest;
+import com.arnor4eck.ShortLinks.entity.ShortUrl;
 import com.arnor4eck.ShortLinks.entity.ShortUrlDto;
 import com.arnor4eck.ShortLinks.entity.response.ShortUrlsDtoFactory;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
@@ -25,5 +26,15 @@ public class ApiController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(shortUrlsDtoFactory.createFromEntity(
                                 shortUrlsService.createUrl(request)));
+    }
+
+    @GetMapping("/{shortCode}")
+    public ResponseEntity<ShortUrlDto> getUrlByShortCode(@PathVariable("shortCode") String shortCode){
+        ShortUrl url = shortUrlsService.getByShortCode(shortCode);
+
+        return url == null ? ResponseEntity.notFound().build() :
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(shortUrlsDtoFactory.createFromEntity(url));
     }
 }

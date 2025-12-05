@@ -13,7 +13,7 @@ public class ShortUrlsDtoFactory {
     private ShortUrlsConfig config;
 
     public ShortUrlDto create(String shortCode, String originalUrl, LocalDate createdAt, LocalDate expiredAt){
-        return new ShortUrlDto(config.base + shortCode, originalUrl, createdAt, expiredAt);
+        return new ShortUrlDto(config.getBase() + shortCode, originalUrl, createdAt, expiredAt);
     }
 
     public ShortUrlDto createFromEntity(ShortUrl url){
