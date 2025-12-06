@@ -1,4 +1,4 @@
-package com.arnor4eck.ShortLinks.configuration.security;
+package com.arnor4eck.ShortLinks.security;
 
 import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.utils.exceptions.UserNotFoundException;
@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -13,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,6 +29,8 @@ import java.util.List;
 public class SecurityConfig {
 
     private UserRepository userRepository;
+
+    private CookieAccessFilter cookieAccessFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -56,7 +62,7 @@ public class SecurityConfig {
 
     @Bean
     @Profile("prod")
-    public CorsConfigurationSource corsConfigurationSourceProd() {
+    public CorsConfigurationSource corsConfigurationSourceProd() { // TODO
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedHeaders(List.of("*"));
@@ -72,6 +78,14 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(daoAuthenticationProvider);
+    }
+
+    @Bean
     @Profile("dev")
     public SecurityFilterChain securityFilterChainDev(HttpSecurity http) throws Exception {
         return http
@@ -81,14 +95,16 @@ public class SecurityConfig {
                         .frameOptions(frame -> frame.sameOrigin()) // для H2 Console
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/short_url/**").authenticated()
                         .requestMatchers("/h2_console/**").permitAll() // разрешить H2 Console
                         .anyRequest().permitAll()
                 )
+                .addFilterBefore(cookieAccessFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
-    @Profile("prod")
+    @Profile("prod") // TODO
     public SecurityFilterChain securityFilterChainProd(HttpSecurity http) throws Exception {
         return http.build();
     }

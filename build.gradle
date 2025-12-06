@@ -1,3 +1,7 @@
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Paths
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.8'
@@ -6,7 +10,7 @@ plugins {
 
 group = 'com.arnor4eck'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+description = 'ShortLinks application'
 
 java {
 	toolchain {
@@ -44,6 +48,11 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-core'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.13.0'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+
 	// Tests
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -53,15 +62,58 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+
+def readProperties() {
+	def envFile = file("${projectDir}/.env")
+	def envProps = [:]
+
+	if(envFile.exists()){
+		def envLines = envFile.readLines()
+
+		for (i in 0..< envLines.size()) {
+			def line = envLines[i].trim()
+
+			if(!line.isEmpty() && !line.startsWith("#")){
+				def lindexOfComm = line.indexOf('#');
+				if(lindexOfComm != -1)
+					line = line.substring(0, lindexOfComm)
+
+				String[] lineParts = line.split('=')
+
+				if(lineParts.length == 2){
+					def key = lineParts[0].trim()
+					def value = lineParts[1].trim()
+
+					envProps.put key, value
+					System.setProperty(key, value)
+					println "Системная переменная ${key} успешно установлена"
+				}else
+					println "Пропущена строка номер ${i + 1}"
+			}
+		}
+	}else
+		println "Файл .env не найден в корне проекта"
+
+	return envProps
+}
+
 tasks.register('bootRunDev', org.springframework.boot.gradle.tasks.run.BootRun) {
 	group = 'application'
 	description = 'Run the Spring Boot application with dev profile'
 
 	mainClass = bootRun.mainClass
 	classpath = bootRun.classpath
-	systemProperty 'spring.profiles.active', 'dev'
 
 	dependsOn 'test'
-}
 
+	doFirst {
+		def envProps = readProperties()
+		envProps['spring.profiles.active'] = 'dev'
+		envProps.each { key, value -> // системные свойства в JVM Gradle
+			System.setProperty(key, value)
+		}
+
+		systemProperties = envProps  //systemProperties - это свойство задачи BootRun
+	}
+}
 

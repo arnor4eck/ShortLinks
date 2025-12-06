@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class ShortUrlsConfig {
-    @Value("${url.base}")
+    @Value("${application.url.base}")
     private String base;
 }

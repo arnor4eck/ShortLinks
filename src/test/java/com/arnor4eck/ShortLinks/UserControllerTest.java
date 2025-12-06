@@ -5,6 +5,7 @@ import com.arnor4eck.ShortLinks.entity.user.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.entity.user.request.CreateUserRequest;
 import com.arnor4eck.ShortLinks.repository.UserRepository;
+import com.arnor4eck.ShortLinks.security.cookie.CookieUtils;
 import com.arnor4eck.ShortLinks.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +18,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,23 +32,16 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@WebMvcTest(controllers = {UserController.class})
+@SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 class UserControllerTest {
     @MockitoBean
     UserService userService;
 
-    @MockitoBean
-    UserRepository userRepository;
-
-    @MockitoBean
-    PasswordEncoder passwordEncoder;
-
     @Autowired
     MockMvc mockMvc;
 
-    private Stream<Arguments> userCreateStream(){
+    private static Stream<Arguments> userCreateStream(){
         return Stream.of(
                 Arguments.of("arnor4eck", "arnor4eck@gmail.com", "ADMIN"),
                 Arguments.of("John", "test@inbox.dot", "USER"),

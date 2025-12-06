@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = {ApiController.class})
+@SpringBootTest
 @AutoConfigureMockMvc(addFilters = false) // отключение фильтров безопасности
 class ApiControllerTest {
     @Autowired
@@ -41,12 +42,6 @@ class ApiControllerTest {
 
     @MockitoBean
     ShortUrlsDtoFactory shortUrlsDtoFactory;
-
-    @MockitoBean
-    UserRepository userRepository;
-
-    @MockitoBean
-    PasswordEncoder passwordEncoder;
 
     ObjectMapper mapper;
 
