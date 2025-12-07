@@ -12,12 +12,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +46,8 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<AuthorizationResponse> auth(@RequestBody @Valid AuthorizationRequest authorizationRequest, HttpServletResponse response){
+    public ResponseEntity<AuthorizationResponse> auth(@RequestBody @Valid AuthorizationRequest authorizationRequest,
+                                                      HttpServletResponse response){
         try{
             User user = (User) manager.authenticate(
                     new UsernamePasswordAuthenticationToken(authorizationRequest.email(),
@@ -53,7 +56,7 @@ public class UserController {
             Cookie cookie = new Cookie(CookieUtils.COOKIE_NAME, token);
 
             cookie.setHttpOnly(true);
-            cookie.setSecure(true);
+            cookie.setSecure(false);
             cookie.setPath("/");
             cookie.setMaxAge((int) cookieUtils.getMaxAge());
 

@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@TestPropertySource(properties = {"url.base=http://localhost:8080/"})
+//@TestPropertySource(properties = {"url.base=http://localhost:8080/"})
 class ShortLinksApplicationTests {
 
 	@Test

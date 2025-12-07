@@ -1,12 +1,17 @@
+package com.arnor4eck.ShortLinks;
+
 import com.arnor4eck.ShortLinks.entity.user.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class DatabaseInitializer implements CommandLineRunner {
     private UserRepository userRepository;
 

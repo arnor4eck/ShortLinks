@@ -24,19 +24,23 @@ public class CookieAccessFilter extends OncePerRequestFilter {
     private final CookieUtils cookieUtils;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         Cookie authCookie = getCookie(request, CookieUtils.COOKIE_NAME);
 
         if(authCookie != null){
             String token = authCookie.getValue();
             try {
                 if(cookieUtils.validateToken(token)){
+
                     SecurityContextHolder.getContext()
                             .setAuthentication(new PreAuthenticatedAuthenticationToken(
                                 cookieUtils.getEmail(token), // если потребуется можно возвращать пользователя
                                     null,
                                     List.of(cookieUtils.getRole(token))
                             ));
+
                 }else{
                     return;
                 }
@@ -49,7 +53,9 @@ public class CookieAccessFilter extends OncePerRequestFilter {
     }
 
     public Cookie getCookie(HttpServletRequest request, String name){
-        for(Cookie cookie : request.getCookies()){
+        Cookie[] cookies = request.getCookies() == null ? new Cookie[0] : request.getCookies();
+
+        for(Cookie cookie : cookies){
             if(cookie.getName().equals(name))
                 return cookie;
         }

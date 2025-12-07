@@ -1,6 +1,8 @@
 package com.arnor4eck.ShortLinks.security;
 
 import com.arnor4eck.ShortLinks.repository.UserRepository;
+import com.arnor4eck.ShortLinks.security.handlers.CookieAccessDeniedHandler;
+import com.arnor4eck.ShortLinks.security.handlers.CookieAuthenticationEntryPoint;
 import com.arnor4eck.ShortLinks.utils.exceptions.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +13,10 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +37,10 @@ public class SecurityConfig {
 
     private CookieAccessFilter cookieAccessFilter;
 
+    private CookieAccessDeniedHandler cookieAccessDeniedHandler;
+
+    private CookieAuthenticationEntryPoint cookieAuthenticationEntryPoint;
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -48,10 +57,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSourceDev() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT", "PATCH"));
         configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
+
         configuration.setExposedHeaders(List.of("Content-Disposition", "Content-Type"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -90,15 +100,24 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChainDev(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSourceDev()))
-                .csrf(CsrfConfigurer::disable)
+                .exceptionHandling(handle -> {
+                    handle
+                    .authenticationEntryPoint(cookieAuthenticationEntryPoint)
+                    .accessDeniedHandler(cookieAccessDeniedHandler);
+                })
                 .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin()) // для H2 Console
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) // для H2 Console
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/short_url/**").authenticated()
+                        .requestMatchers("/**/users/auth").permitAll()
                         .requestMatchers("/h2_console/**").permitAll() // разрешить H2 Console
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
+                .csrf(CsrfConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(cookieAccessFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
