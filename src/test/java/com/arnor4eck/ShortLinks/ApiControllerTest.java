@@ -70,14 +70,14 @@ class ApiControllerTest {
 
         when(shortUrlsDtoFactory.createFromEntity(any())) // обычный DTO
                 .thenReturn(new ShortUrlDto(originalUrl, "short_link",
-                        createdAt, createdAt.plusDays(daysUrlAlive == null ? 0 : daysUrlAlive)));
+                        createdAt, createdAt.plusDays(daysUrlAlive == null ? 0 : daysUrlAlive), true));
 
         mockMvc.perform(post("/api/short_links/create")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.size()").value(4))
+                .andExpect(jsonPath("$.size()").value(5))
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
                 .andExpect(jsonPath("$.shortUrl").value("short_link"))
                 .andExpect(jsonPath("$.author").doesNotExist());
@@ -88,30 +88,9 @@ class ApiControllerTest {
         User mockUser = new User(1, "arnor4eck", "arnor4eck@mail.ru",
                 "password", Role.ADMIN);
         ShortUrl url = new ShortUrl(1, "shortCode", "http://arnor4eck.com",
-                LocalDate.now(), LocalDate.now(), mockUser);
+                LocalDate.now(), LocalDate.now(), true, mockUser);
         ShortUrlDto dto = new ShortUrlDto("http://arnor4eck.com", "http://example.com/shortCode",
-                LocalDate.now(), LocalDate.now());
-
-        when(shortUrlsService.getByShortCode(anyString())).thenReturn(url);
-        when(shortUrlsDtoFactory.createFromEntity(any())).thenReturn(dto);
-
-        mockMvc.perform(get("/api/short_links/short_code"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.size()").value(4))
-                .andExpect(jsonPath("$.originalUrl").value(url.getOriginalUrl()))
-                .andExpect(jsonPath("$.author").doesNotExist());
-    }
-
-    @Test
-    public void testGetUrlByShortCodeAdmin() throws Exception {
-        User mockUser = new User(1, "arnor4eck", "arnor4eck@mail.ru",
-                "password", Role.ADMIN);
-        ShortUrl url = new ShortUrl(1, "shortCode", "http://arnor4eck.com",
-                LocalDate.now(), LocalDate.now(), mockUser);
-        ShortUrlDto dto = new AdminShortUrlDto("http://arnor4eck.com", "http://example.com/shortCode",
-                LocalDate.now(), LocalDate.now(),
-                UserDto.fromEntity(mockUser));
+                LocalDate.now(), LocalDate.now(), true);
 
         when(shortUrlsService.getByShortCode(anyString())).thenReturn(url);
         when(shortUrlsDtoFactory.createFromEntity(any())).thenReturn(dto);
@@ -121,6 +100,29 @@ class ApiControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.size()").value(5))
                 .andExpect(jsonPath("$.originalUrl").value(url.getOriginalUrl()))
+                .andExpect(jsonPath("$.isActive").value(true))
+                .andExpect(jsonPath("$.author").doesNotExist());
+    }
+
+    @Test
+    public void testGetUrlByShortCodeAdmin() throws Exception {
+        User mockUser = new User(1, "arnor4eck", "arnor4eck@mail.ru",
+                "password", Role.ADMIN);
+        ShortUrl url = new ShortUrl(1, "shortCode", "http://arnor4eck.com",
+                LocalDate.now(), LocalDate.now(), true, mockUser);
+        ShortUrlDto dto = new AdminShortUrlDto("http://arnor4eck.com", "http://example.com/shortCode",
+                LocalDate.now(), LocalDate.now(),
+                true, UserDto.fromEntity(mockUser));
+
+        when(shortUrlsService.getByShortCode(anyString())).thenReturn(url);
+        when(shortUrlsDtoFactory.createFromEntity(any())).thenReturn(dto);
+
+        mockMvc.perform(get("/api/short_links/short_code"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.size()").value(6))
+                .andExpect(jsonPath("$.originalUrl").value(url.getOriginalUrl()))
+                .andExpect(jsonPath("$.isActive").exists())
                 .andExpect(jsonPath("$.author").exists());
     }
 

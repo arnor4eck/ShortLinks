@@ -3,6 +3,7 @@ package com.arnor4eck.ShortLinks.entity.short_url;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
@@ -29,6 +30,10 @@ public class ShortUrl {
 
     @Column
     private LocalDate expiresAt;
+
+    @Column
+    @Builder.Default
+    private boolean isActive = true;
 
     @ManyToOne
     @JoinColumn(name = "users_id")

@@ -11,8 +11,8 @@ public class AdminShortUrlDto extends ShortUrlDto implements ShortUrlAdminView {
     private final UserDto author;
 
     public AdminShortUrlDto(String originalUrl, String shortUrl,
-                            LocalDate createdAt, LocalDate expiredAt, UserDto author) {
-        super(originalUrl, shortUrl, createdAt, expiredAt);
+                            LocalDate createdAt, LocalDate expiredAt, boolean isActive, UserDto author) {
+        super(originalUrl, shortUrl, createdAt, expiredAt, isActive);
         this.author = author;
     }
 

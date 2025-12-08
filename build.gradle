@@ -104,7 +104,7 @@ tasks.register('bootRunDev', org.springframework.boot.gradle.tasks.run.BootRun) 
 	mainClass = bootRun.mainClass
 	classpath = bootRun.classpath
 
-	//dependsOn 'test'
+	dependsOn 'test'
 
 	doFirst {
 		def envProps = readProperties()

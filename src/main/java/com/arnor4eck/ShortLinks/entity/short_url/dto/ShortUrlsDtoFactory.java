@@ -18,7 +18,7 @@ public class ShortUrlsDtoFactory {
     private ShortUrlsConfig config;
 
     private ShortUrlDto create(String shortCode, String originalUrl,
-                             LocalDate createdAt, LocalDate expiredAt,
+                             LocalDate createdAt, LocalDate expiredAt, boolean isActive,
                              User author){
 
         if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
@@ -28,16 +28,16 @@ public class ShortUrlsDtoFactory {
             if (role.contains(Role.ADMIN)) // в зависимости от роли пользователя возвращаем определенный DTO
                 return new AdminShortUrlDto(originalUrl, config.getBase() + shortCode,
                         createdAt, expiredAt,
-                        author == null ? null : UserDto.fromEntity(author));
+                        isActive, author == null ? null : UserDto.fromEntity(author));
         }
 
         return new ShortUrlDto(originalUrl, config.getBase() + shortCode,
-                createdAt, expiredAt); // если не авторизован или роль USER - обычный DTO
+                createdAt, expiredAt, isActive); // если не авторизован или роль USER - обычный DTO
     }
 
     public ShortUrlDto createFromEntity(ShortUrl url){
         return create(url.getShortCode(), url.getOriginalUrl(),
                 url.getCreatedAt(), url.getExpiresAt(),
-                url.getAuthor());
+                url.isActive(), url.getAuthor());
     }
 }

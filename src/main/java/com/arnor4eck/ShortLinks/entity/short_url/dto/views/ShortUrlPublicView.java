@@ -7,4 +7,5 @@ public interface ShortUrlPublicView { // видят все
     String getShortUrl();
     LocalDate getCreatedAt();
     LocalDate getExpiredAt();
+    boolean getIsActive();
 }

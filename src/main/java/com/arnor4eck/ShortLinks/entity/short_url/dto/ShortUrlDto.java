@@ -12,6 +12,7 @@ public class ShortUrlDto implements ShortUrlPublicView {
     private final String shortUrl;
     private final LocalDate createdAt;
     private final LocalDate expiredAt;
+    private final boolean isActive;
 
     @Override
     public String getOriginalUrl() {
@@ -31,5 +32,10 @@ public class ShortUrlDto implements ShortUrlPublicView {
     @Override
     public LocalDate getExpiredAt() {
         return expiredAt;
+    }
+
+    @Override
+    public boolean getIsActive() {
+        return isActive;
     }
 }
