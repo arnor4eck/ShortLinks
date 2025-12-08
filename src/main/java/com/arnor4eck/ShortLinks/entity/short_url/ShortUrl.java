@@ -3,7 +3,7 @@ package com.arnor4eck.ShortLinks.entity.short_url;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
@@ -26,6 +26,7 @@ public class ShortUrl {
     private String originalUrl;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDate createdAt;
 
     @Column
