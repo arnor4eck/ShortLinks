@@ -1,27 +1,17 @@
 package com.arnor4eck.ShortLinks;
 
-import com.arnor4eck.ShortLinks.controller.UserController;
-import com.arnor4eck.ShortLinks.entity.user.Role;
+import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.entity.user.request.CreateUserRequest;
-import com.arnor4eck.ShortLinks.repository.UserRepository;
-import com.arnor4eck.ShortLinks.security.cookie.CookieUtils;
 import com.arnor4eck.ShortLinks.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.activation.MimeType;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -51,11 +41,13 @@ class UserControllerTest {
 
     @ParameterizedTest
     @MethodSource("userCreateStream")
-    public void testCreateUser(String username, String email, Role role) throws Exception {
+    public void testCreateUser(String username,
+                               String email,
+                               String role) throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
         CreateUserRequest request = new CreateUserRequest(username, email, "password", role);
-        User mockUser = new User(1, username, email, "encoded_password", role);
+        User mockUser = new User(1, username, email, "encoded_password", Role.valueOf(role));
         String requestString = objectMapper.writeValueAsString(request);
 
         when(userService.create(any(CreateUserRequest.class))).thenReturn(mockUser);

@@ -1,5 +1,6 @@
 package com.arnor4eck.ShortLinks.entity.user;
 
+import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import jakarta.persistence.*;
 import jakarta.persistence.Enumerated;
 import lombok.*;

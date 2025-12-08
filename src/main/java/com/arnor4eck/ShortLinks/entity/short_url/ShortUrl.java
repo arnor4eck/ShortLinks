@@ -1,5 +1,6 @@
 package com.arnor4eck.ShortLinks.entity.short_url;
 
+import com.arnor4eck.ShortLinks.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,4 +29,8 @@ public class ShortUrl {
 
     @Column
     private LocalDate expiresAt;
+
+    @ManyToOne
+    @JoinColumn(name = "users_id")
+    private User author;
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Component
 public class CookieAccessDeniedHandler implements AccessDeniedHandler {
@@ -28,7 +29,7 @@ public class CookieAccessDeniedHandler implements AccessDeniedHandler {
         response.getWriter().write(
                 mapper.writeValueAsString(
                         new ExceptionResponse(
-                                HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage()
-                        )));
+                            HttpServletResponse.SC_FORBIDDEN,
+                            List.of(accessDeniedException.getMessage()))));
     }
 }

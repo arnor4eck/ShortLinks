@@ -1,9 +1,9 @@
 package com.arnor4eck.ShortLinks.controller;
 
+import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlDto;
 import com.arnor4eck.ShortLinks.entity.short_url.request.CreateShortUrlRequest;
 import com.arnor4eck.ShortLinks.entity.short_url.ShortUrl;
-import com.arnor4eck.ShortLinks.entity.short_url.response.ShortUrlDto;
-import com.arnor4eck.ShortLinks.entity.short_url.response.ShortUrlsDtoFactory;
+import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlsDtoFactory;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

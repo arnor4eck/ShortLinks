@@ -1,8 +1,8 @@
 package com.arnor4eck.ShortLinks.service;
 
-import com.arnor4eck.ShortLinks.entity.user.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.entity.user.request.CreateUserRequest;
+import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +23,7 @@ public class UserService {
                 .username(request.username())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .role(request.role()).build());
+                .role(Role.valueOf(request.role()))
+                .build());
     }
 }

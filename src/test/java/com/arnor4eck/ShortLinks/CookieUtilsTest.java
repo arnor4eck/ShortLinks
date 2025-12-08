@@ -1,6 +1,6 @@
 package com.arnor4eck.ShortLinks;
 
-import com.arnor4eck.ShortLinks.entity.user.Role;
+import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.security.cookie.CookieProperties;
 import com.arnor4eck.ShortLinks.security.cookie.CookieUtils;

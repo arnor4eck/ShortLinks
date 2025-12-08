@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Component
 public class CookieAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -25,8 +26,9 @@ public class CookieAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
 
         response.getWriter().write(
-                mapper.writeValueAsString(new ExceptionResponse(HttpServletResponse.SC_UNAUTHORIZED,
-                                        authException.getMessage()))
+                mapper.writeValueAsString(new ExceptionResponse(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        List.of(authException.getMessage())))
         );
     }
 }

@@ -1,14 +1,13 @@
 package com.arnor4eck.ShortLinks.entity.user.request;
 
-import com.arnor4eck.ShortLinks.utils.RoleDeserializer;
-import com.arnor4eck.ShortLinks.entity.user.Role;
+import com.arnor4eck.ShortLinks.entity.user.role.validation.RoleConstraint;
+import com.arnor4eck.ShortLinks.entity.user.role.RoleDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record CreateUserRequest(
-        @NotNull(message = "Пропущен параметр username") @NotEmpty(message = "Имя не может быть пусты") String username,
-        @NotNull(message = "Пропущен параметр email") @Email(message = "Некорректный Email", regexp = "^[\\w.%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$") String email,
-        @NotNull(message = "Пропущен параметр password") @NotEmpty(message = "Пароль не может быть пустым") String password,
-        @NotNull(message = "Пропущен параметр role") @JsonDeserialize(using = RoleDeserializer.class) Role role) {}
+        @NotBlank String username,
+        @NotBlank @Email(regexp = "^[\\w.%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$") String email,
+        @NotBlank String password,
+        @RoleConstraint @JsonDeserialize(using = RoleDeserializer.class) String role) {}

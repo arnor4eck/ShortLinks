@@ -1,4 +1,4 @@
-package com.arnor4eck.ShortLinks.entity.user;
+package com.arnor4eck.ShortLinks.entity.user.role;
 
 import org.springframework.security.core.GrantedAuthority;
 

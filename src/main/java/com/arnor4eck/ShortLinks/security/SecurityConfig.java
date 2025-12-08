@@ -110,6 +110,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**/users/auth").permitAll()
+                        .requestMatchers("/**/short_links/create").authenticated()
+                        .requestMatchers("/**/short_links/{short_code}").permitAll()
                         .requestMatchers("/h2_console/**").permitAll() // разрешить H2 Console
                         .anyRequest().authenticated()
                 )
