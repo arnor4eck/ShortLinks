@@ -20,18 +20,19 @@ public class ShortUrlsDtoFactory {
     private ShortUrlDto create(String shortCode, String originalUrl,
                              LocalDate createdAt, LocalDate expiredAt, boolean isActive,
                              User author){
+        String shortUrl = config.getBase() + config.getRedirect() + shortCode;
 
         if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
             List<Role> role = (List<Role>) SecurityContextHolder.getContext()
                     .getAuthentication().getAuthorities();
 
             if (role.contains(Role.ADMIN)) // в зависимости от роли пользователя возвращаем определенный DTO
-                return new AdminShortUrlDto(originalUrl, config.getBase() + shortCode,
+                return new AdminShortUrlDto(originalUrl, shortUrl,
                         createdAt, expiredAt,
                         isActive, author == null ? null : UserDto.fromEntity(author));
         }
 
-        return new ShortUrlDto(originalUrl, config.getBase() + shortCode,
+        return new ShortUrlDto(originalUrl, shortUrl,
                 createdAt, expiredAt, isActive); // если не авторизован или роль USER - обычный DTO
     }
 

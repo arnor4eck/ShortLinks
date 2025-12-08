@@ -22,7 +22,7 @@ public class ShortUrl {
     @Column(unique = true, nullable = false)
     private String shortCode;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1024)
     private String originalUrl;
 
     @Column(nullable = false)

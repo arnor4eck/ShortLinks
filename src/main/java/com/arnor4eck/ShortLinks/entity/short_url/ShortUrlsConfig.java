@@ -9,4 +9,7 @@ import org.springframework.stereotype.Component;
 public class ShortUrlsConfig {
     @Value("${application.url.base}")
     private String base;
+
+    @Value("${application.url.redirect}")
+    private String redirect;
 }

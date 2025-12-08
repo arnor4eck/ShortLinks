@@ -5,6 +5,7 @@ spring:
 application:
   url:
     base: ${URL_BASE:http://localhost:8080/}
+    redirect: ${REDIRECT_URL:redirect_link/}
   cookie:
     secret: ${COOKIE_SECRET:test-cookie-secret}
     age: ${COOKIE_MAX_AGE:1000}
