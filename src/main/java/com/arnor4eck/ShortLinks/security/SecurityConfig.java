@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -110,9 +111,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**/users/auth").permitAll()
-                        .requestMatchers("/**/short_links/create").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/**/short_links/{short_code}").permitAll()
+                        //.requestMatchers("/**/short_links/create").authenticated()
                         .requestMatchers("/redirect_link/**").permitAll()
-                        .requestMatchers("/**/short_links/{short_code}").permitAll()
                         .requestMatchers("/h2_console/**").permitAll() // разрешить H2 Console
                         .anyRequest().authenticated()
                 )
