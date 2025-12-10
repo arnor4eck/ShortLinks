@@ -1,5 +1,6 @@
 package com.arnor4eck.ShortLinks;
 
+import com.arnor4eck.ShortLinks.controller.ApiController;
 import com.arnor4eck.ShortLinks.entity.short_url.dto.AdminShortUrlDto;
 import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlDto;
 import com.arnor4eck.ShortLinks.entity.short_url.request.CreateShortUrlRequest;
@@ -8,18 +9,28 @@ import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlsDtoFactory;
 import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.entity.user.UserDto;
+import com.arnor4eck.ShortLinks.repository.ShortUrlRepository;
 import com.arnor4eck.ShortLinks.repository.UserRepository;
+import com.arnor4eck.ShortLinks.security.CookieAccessFilter;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
+import com.arnor4eck.ShortLinks.utils.HashGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -32,7 +43,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@WebMvcTest(controllers = ApiController.class,
+    excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, // исключаем фильтр безопасности
+                                        classes = CookieAccessFilter.class))
+@ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false) // отключение фильтров безопасности
 class ApiControllerTest {
     @Autowired
@@ -43,9 +57,6 @@ class ApiControllerTest {
 
     @MockitoBean
     ShortUrlsDtoFactory shortUrlsDtoFactory;
-
-    @MockitoBean
-    UserRepository userRepository;
 
     ObjectMapper mapper;
 

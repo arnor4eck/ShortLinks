@@ -6,14 +6,17 @@ import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.repository.ShortUrlRepository;
 import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.utils.HashGenerator;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
 @AllArgsConstructor
+@Profile("dev")
 public class DatabaseInitializer implements CommandLineRunner {
     private UserRepository userRepository;
 

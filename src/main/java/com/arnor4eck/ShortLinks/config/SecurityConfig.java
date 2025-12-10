@@ -1,6 +1,7 @@
-package com.arnor4eck.ShortLinks.security;
+package com.arnor4eck.ShortLinks.config;
 
 import com.arnor4eck.ShortLinks.repository.UserRepository;
+import com.arnor4eck.ShortLinks.security.CookieAccessFilter;
 import com.arnor4eck.ShortLinks.security.handlers.CookieAccessDeniedHandler;
 import com.arnor4eck.ShortLinks.security.handlers.CookieAuthenticationEntryPoint;
 import com.arnor4eck.ShortLinks.utils.exceptions.UserNotFoundException;
