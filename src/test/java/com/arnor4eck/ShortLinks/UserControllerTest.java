@@ -1,5 +1,6 @@
 package com.arnor4eck.ShortLinks;
 
+import com.arnor4eck.ShortLinks.controller.ApiController;
 import com.arnor4eck.ShortLinks.controller.UserController;
 import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
@@ -23,6 +24,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBeans;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Stream;
@@ -35,17 +37,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = UserController.class,
             excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
             classes = CookieAccessFilter.class))
+@MockitoBeans({
+        @MockitoBean(name = "cookieUtils", types = CookieUtils.class),
+        @MockitoBean(name = "authenticationManager", types = AuthenticationManager.class),
+})
 @AutoConfigureMockMvc(addFilters = false)
-
 class UserControllerTest {
     @MockitoBean
     UserService userService;
-
-    @MockitoBean
-    AuthenticationManager authenticationManager;
-
-    @MockitoBean
-    private CookieUtils cookieUtils;
 
     @Autowired
     MockMvc mockMvc;

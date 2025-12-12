@@ -46,7 +46,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ApiController.class,
     excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, // исключаем фильтр безопасности
                                         classes = CookieAccessFilter.class))
-@ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false) // отключение фильтров безопасности
 class ApiControllerTest {
     @Autowired

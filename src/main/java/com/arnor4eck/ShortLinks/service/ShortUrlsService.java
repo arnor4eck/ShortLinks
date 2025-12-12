@@ -9,14 +9,19 @@ import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.utils.HashGenerator;
 import com.arnor4eck.ShortLinks.utils.exceptions.UserNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ShortUrlsService {
     HashGenerator generator;
 
@@ -39,13 +44,16 @@ public class ShortUrlsService {
                         .build()));
     }
 
+    @Cacheable(value = "shortUrl", key = "#shortCode")
     public ShortUrl getByShortCode(String shortCode){
         return shortUrlRepository.getByShortCode(shortCode);
     }
 
+    @CacheEvict(value = "shortUrl", key = "#shortCode")
+    @Transactional
     public boolean deleteByShortCode(String shortCode,
                                     Authentication authentication){
-        ShortUrl shortUrl = getByShortCode(shortCode);
+        ShortUrl shortUrl = shortUrlRepository.getByShortCode(shortCode);
 
         if(shortUrl == null)
             return true;
