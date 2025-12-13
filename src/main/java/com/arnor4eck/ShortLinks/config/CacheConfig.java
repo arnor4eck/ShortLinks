@@ -54,7 +54,8 @@ public class CacheConfig {
     public CacheManager cacheManager(){
         CaffeineCacheManager manager = new CaffeineCacheManager();
         manager.setCaffeine(caffeine());
-        //manager.setCacheNames(List.of("shortUrl")); явно указывается в application-dev.yml
+        manager.setCacheNames(List.of("shortUrl"));
+        manager.getCacheNames().forEach(System.out::println);
 
         return manager;
     }

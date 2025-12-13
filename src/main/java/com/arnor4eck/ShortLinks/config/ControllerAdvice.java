@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -34,6 +35,12 @@ public class ControllerAdvice {
         int errorCode = HttpStatus.BAD_REQUEST.value();
 
         response.setStatus(errorCode);
-        return new ExceptionResponse(errorCode, List.of(e.getErrorMessage()));
+        return new ExceptionResponse(errorCode, e.getErrorMessage());
+    }
+
+    @ExceptionHandler({ResponseStatusException.class})
+    public ExceptionResponse responseStatusException(ResponseStatusException e, HttpServletResponse response){
+        response.setStatus(e.getStatusCode().value());
+        return new ExceptionResponse(e.getStatusCode().value(), e.getReason());
     }
 }

@@ -5,7 +5,6 @@ import com.arnor4eck.ShortLinks.entity.short_url.request.CreateShortUrlRequest;
 import com.arnor4eck.ShortLinks.entity.short_url.ShortUrl;
 import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlsDtoFactory;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
-import jakarta.validation.Path;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,12 +31,9 @@ public class ApiController {
 
     @GetMapping("/{shortCode}")
     public ResponseEntity<ShortUrlDto> getUrlByShortCode(@PathVariable("shortCode") String shortCode){
-        ShortUrl url = shortUrlsService.getByShortCode(shortCode);
-
-        return url == null ? ResponseEntity.notFound().build() :
-                ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(shortUrlsDtoFactory.createFromEntity(url));
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(shortUrlsDtoFactory.createFromEntity(shortUrlsService.getByShortCode(shortCode)));
     }
 
     @DeleteMapping("/{shortCode}")

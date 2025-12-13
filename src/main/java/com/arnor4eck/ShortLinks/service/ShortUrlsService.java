@@ -8,13 +8,18 @@ import com.arnor4eck.ShortLinks.repository.ShortUrlRepository;
 import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.utils.HashGenerator;
 import com.arnor4eck.ShortLinks.utils.exceptions.UserNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -44,13 +49,33 @@ public class ShortUrlsService {
                         .build()));
     }
 
-    @Cacheable(value = "shortUrl", key = "#shortCode")
-    public ShortUrl getByShortCode(String shortCode){
+    @Cacheable(value = "shortUrl", key = "#shortCode",
+            unless = "#result == null")
+    public ShortUrl findShortUrl(String shortCode){
         return shortUrlRepository.getByShortCode(shortCode);
     }
 
+    public ShortUrl getRedirectUrl(String shortCode){
+        ShortUrl shortUrl = getByShortCode(shortCode);
+
+        if(!shortUrl.isActive()){
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Срок действия истек");
+        }
+
+        return shortUrl;
+    }
+
+    public ShortUrl getByShortCode(String shortCode){
+        ShortUrl shortUrl = findShortUrl(shortCode);
+
+        if(shortUrl == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Ссылка с кодом %s не найдена".formatted(shortCode));
+
+        return shortUrl;
+    }
+
     @CacheEvict(value = "shortUrl", key = "#shortCode")
-    @Transactional
     public boolean deleteByShortCode(String shortCode,
                                     Authentication authentication){
         ShortUrl shortUrl = shortUrlRepository.getByShortCode(shortCode);

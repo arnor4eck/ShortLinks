@@ -19,17 +19,11 @@ public class RedirectController {
     private ShortUrlsService shortUrlsService;
 
     @GetMapping("/{short_code}")
-    public ResponseEntity<?> redirectToOriginalUrl(@PathVariable("short_code") String shortCode){
-        ShortUrl shortUrl = shortUrlsService.getByShortCode(shortCode);
+    public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable("short_code") String shortCode){
+        ShortUrl shortUrl = shortUrlsService.getRedirectUrl(shortCode);
 
-        if(shortUrl != null && shortUrl.isActive()){
-            return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
-                    .header("Location", shortUrl.getOriginalUrl())
-                    .build();
-        }
-
-        return ResponseEntity
-                .notFound()
+        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
+                .header("Location", shortUrl.getOriginalUrl())
                 .build();
     }
 }
