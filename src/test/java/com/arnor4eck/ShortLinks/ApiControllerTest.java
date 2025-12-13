@@ -1,5 +1,6 @@
 package com.arnor4eck.ShortLinks;
 
+import com.arnor4eck.ShortLinks.config.ControllerAdvice;
 import com.arnor4eck.ShortLinks.controller.ApiController;
 import com.arnor4eck.ShortLinks.entity.short_url.dto.AdminShortUrlDto;
 import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlDto;
@@ -9,30 +10,25 @@ import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlsDtoFactory;
 import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.entity.user.UserDto;
-import com.arnor4eck.ShortLinks.repository.ShortUrlRepository;
-import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.security.CookieAccessFilter;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
-import com.arnor4eck.ShortLinks.utils.HashGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -46,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ApiController.class,
     excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, // исключаем фильтр безопасности
                                         classes = CookieAccessFilter.class))
+@Import({ControllerAdvice.class})
 @AutoConfigureMockMvc(addFilters = false) // отключение фильтров безопасности
 class ApiControllerTest {
     @Autowired
@@ -94,7 +91,7 @@ class ApiControllerTest {
     }
 
     @Test
-    public void testGetUrlByShortCodeOK() throws Exception {
+    public void testGetUrlByShortCodeShouldReturnOk() throws Exception {
         User mockUser = new User(1, "arnor4eck", "arnor4eck@mail.ru",
                 "password", Role.ADMIN);
         ShortUrl url = new ShortUrl(1, "shortCode", "http://arnor4eck.com",
@@ -137,9 +134,22 @@ class ApiControllerTest {
     }
 
     @Test
-    public void testGetUrlBySHortCodeNotFound() throws Exception {
+    public void testGetUrlBySHortCodeShouldReturn404() throws Exception {
+        when(shortUrlsService.getByShortCode(anyString()))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "Ссылка с кодом short_code не найдена"));
+
         mockMvc.perform(get("/api/short_links/short_code"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(""));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.messages[0]").value("Ссылка с кодом short_code не найдена"));
+    }
+
+    @Test
+    public void testDeleteByShortCodeShouldReturn202() throws Exception {
+        when(shortUrlsService.deleteByShortCode(anyString(), any())).thenReturn(true);
+
+        mockMvc.perform(delete("/api/short_links/short_code"))
+                .andExpect(status().isAccepted());
     }
 }

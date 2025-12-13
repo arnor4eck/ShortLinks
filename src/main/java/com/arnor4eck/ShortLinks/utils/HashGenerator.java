@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 @Component
 public final class HashGenerator {
@@ -19,9 +18,9 @@ public final class HashGenerator {
         this("SHA-256");
     }
 
-    public String hash(String inputString){
+    public String hash(String inputLine){
         StringBuilder hexString = new StringBuilder();
-        byte[] hashBytes = digest.digest(inputString.getBytes(StandardCharsets.UTF_8));
+        byte[] hashBytes = digest.digest(inputLine.getBytes(StandardCharsets.UTF_8));
 
         for(int i = 0; i < hashBytes.length; ++i){
             if(i % 3 == 0) {
