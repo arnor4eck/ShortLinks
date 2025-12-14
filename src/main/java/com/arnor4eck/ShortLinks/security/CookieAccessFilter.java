@@ -1,7 +1,6 @@
 package com.arnor4eck.ShortLinks.security;
 
 import com.arnor4eck.ShortLinks.entity.user.User;
-import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.security.cookie.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

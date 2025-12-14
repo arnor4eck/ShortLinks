@@ -3,7 +3,6 @@ package com.arnor4eck.ShortLinks.service;
 import com.arnor4eck.ShortLinks.entity.short_url.request.CreateShortUrlRequest;
 import com.arnor4eck.ShortLinks.entity.short_url.ShortUrl;
 import com.arnor4eck.ShortLinks.entity.user.User;
-import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.repository.ShortUrlRepository;
 import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.utils.exceptions.UserNotFoundException;
@@ -13,7 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +29,8 @@ public class ShortUrlsService {
     ShortUrlRepository shortUrlRepository;
 
     UserRepository userRepository;
+
+    UserDetailsService userDetailsService;
 
     public ShortUrl createUrl(CreateShortUrlRequest request){
         User author = request.authorId() == null ? null :
@@ -76,14 +78,11 @@ public class ShortUrlsService {
 
     @CacheEvict(value = "shortUrl", key = "#shortCode")
     public boolean deleteByShortCode(String shortCode,
-                                    Authentication authentication){
-        ShortUrl shortUrl = shortUrlRepository.getByShortCode(shortCode);
+                                     @AuthenticationPrincipal User authUser){
+        ShortUrl shortUrl = findShortUrl(shortCode);
 
-        if(shortUrl == null)
-            return true;
-
-        if(shortUrl.getAuthor().getEmail().equals((String) authentication.getPrincipal()) // если тот же автор
-            || authentication.getAuthorities().contains(Role.ADMIN)) {  // или если админ
+        if(shortUrl == null || shortUrl.getAuthor().getEmail().equals(authUser.getEmail()) // если тот же автор
+            || authUser.isAdmin()) {  // или если админ
 
             this.shortUrlRepository.deleteByShortCode(shortCode);
             return true;
