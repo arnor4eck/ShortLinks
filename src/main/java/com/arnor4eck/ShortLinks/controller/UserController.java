@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,8 @@ import java.security.NoSuchAlgorithmException;
 @AllArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    private final UserDetailsService userDetailsService;
 
     private final AuthenticationManager manager;
 
@@ -46,9 +50,13 @@ public class UserController {
     public ResponseEntity<AuthorizationResponse> auth(@RequestBody @Valid AuthorizationRequest authorizationRequest,
                                                       HttpServletResponse response){
         try{
-            User user = (User) manager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authorizationRequest.email(),
-                    authorizationRequest.password())).getPrincipal();
+            Authentication authentication = manager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authorizationRequest.email(),
+                            authorizationRequest.password())
+            );
+
+            User user = (User) authentication.getPrincipal();
             String token = cookieUtils.generateToken(user);
             Cookie cookie = new Cookie(CookieUtils.COOKIE_NAME, token);
 

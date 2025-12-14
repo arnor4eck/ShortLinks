@@ -1,5 +1,7 @@
 package com.arnor4eck.ShortLinks.security;
 
+import com.arnor4eck.ShortLinks.entity.user.User;
+import com.arnor4eck.ShortLinks.repository.UserRepository;
 import com.arnor4eck.ShortLinks.security.cookie.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,6 +24,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CookieAccessFilter extends OncePerRequestFilter {
 
+    private final UserDetailsService userDetailsService;
+
     private final CookieUtils cookieUtils;
 
     @Override
@@ -33,12 +38,14 @@ public class CookieAccessFilter extends OncePerRequestFilter {
             String token = authCookie.getValue();
             try {
                 if(cookieUtils.validateToken(token)){
+                    String email = cookieUtils.getEmail(token);
+                    User authUser = (User) userDetailsService.loadUserByUsername(email);
 
                     SecurityContextHolder.getContext()
                             .setAuthentication(new PreAuthenticatedAuthenticationToken(
-                                cookieUtils.getEmail(token), // если потребуется можно возвращать пользователя
+                                    authUser,
                                     null,
-                                    List.of(cookieUtils.getRole(token))
+                                    authUser.getAuthorities()
                             ));
 
                 }else{

@@ -19,7 +19,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,8 +37,6 @@ import java.util.List;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private UserRepository userRepository;
-
     private CookieAccessFilter cookieAccessFilter;
 
     private CookieAccessDeniedHandler cookieAccessDeniedHandler;
@@ -46,12 +46,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return email -> userRepository.findByEmail(email)
-                            .orElseThrow(() -> new UserNotFoundException("Пользователь с email %s не найден.".formatted(email)));
     }
 
     @Bean
@@ -104,7 +98,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSourceDev()))
                 .exceptionHandling(handle -> {
                     handle
-                    //.authenticationEntryPoint(cookieAuthenticationEntryPoint)
+                    .authenticationEntryPoint(cookieAuthenticationEntryPoint)
                     .accessDeniedHandler(cookieAccessDeniedHandler);
                 })
                 .headers(headers -> headers

@@ -17,7 +17,7 @@ public class UserService {
 
     PasswordEncoder passwordEncoder;
 
-    @PreAuthorize("authentication.getPrincipal() == 'arnor4eck@gmail.com'")
+    @PreAuthorize("authentication.getPrincipal().getEmail() == 'arnor4eck@gmail.com'")
     public User create(CreateUserRequest request){
         return userRepository.save(User.builder()
                 .username(request.username())
