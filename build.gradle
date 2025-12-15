@@ -52,9 +52,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'com.github.ben-manes.caffeine:caffeine'
 
+	// Integration
+	implementation 'org.springframework.boot:spring-boot-starter-integration'
+	implementation "org.springframework.integration:spring-integration-jpa"
+
 	// Tests
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.integration:spring-integration-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
