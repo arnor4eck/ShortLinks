@@ -3,6 +3,7 @@ package com.arnor4eck.ShortLinks.security.cookie;
 import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import lombok.AllArgsConstructor;
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
@@ -38,8 +39,15 @@ public class CookieUtils {
         return hmacSHA256.doFinal(string.getBytes(StandardCharsets.UTF_8));
     }
 
-    public final long getMaxAge(){
-        return cookieProperties.getAge();
+    public Cookie generateCookie(String token){
+        Cookie cookie = new Cookie(CookieUtils.COOKIE_NAME, token);
+
+        cookie.setHttpOnly(cookieProperties.isHttpOnly());
+        cookie.setSecure(cookieProperties.isSecure());
+        cookie.setPath(cookieProperties.getPath());
+        cookie.setMaxAge((int) cookieProperties.getAge());
+
+        return cookie;
     }
 
     private byte[] concat(byte[] arr1, byte[] arr2){
@@ -90,7 +98,7 @@ public class CookieUtils {
 
         byte ans = 0;
         for(int i = 0; i < hmac1.length; ++i)
-            ans |= hmac1[i] ^ hmac2[i]; // xor одинаковых битов дает 0
+            ans |= (byte) (hmac1[i] ^ hmac2[i]); // xor одинаковых битов дает 0
 
         return ans == 0; // значит дизъюнкция всех xor-ов равно 0
     }
