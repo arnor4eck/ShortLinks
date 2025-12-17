@@ -10,10 +10,7 @@ import com.arnor4eck.ShortLinks.utils.ShortUrlHashGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,9 +25,9 @@ public class ShortUrlsService {
 
     ShortUrlRepository shortUrlRepository;
 
-    UserRepository userRepository;
+    ShortUrlCacheService cacheService;
 
-    UserDetailsService userDetailsService;
+    UserRepository userRepository;
 
     public ShortUrl createUrl(CreateShortUrlRequest request){
         User author = request.authorId() == null ? null :
@@ -38,36 +35,32 @@ public class ShortUrlsService {
                                 () -> new UserNotFoundException("Пользователь с id %d не найден".formatted(request.authorId())));
 
         LocalDate createdAt = LocalDate.now();
-        String hash = generator.generate(author.getEmail(), createdAt, request.originalUrl());
+        String hash = generator.generate(author.getEmail(),
+                            createdAt, request.originalUrl());
 
         return Optional.ofNullable(shortUrlRepository.getByShortCode(hash))
                 .orElseGet(() -> shortUrlRepository.save(ShortUrl.builder()
                         .createdAt(createdAt)
                         .originalUrl(request.originalUrl())
                         .shortCode(hash)
-                        .expiresAt(request.daysUrlAlive() == null ? null : createdAt.plusDays(request.daysUrlAlive()))
+                        .expiresAt(request.daysUrlAlive() == null
+                                    ? null : createdAt.plusDays(request.daysUrlAlive()))
                         .author(author)
                         .build()));
     }
 
-    @Cacheable(value = "shortUrl", key = "#shortCode",
-            unless = "#result == null")
-    public ShortUrl findShortUrl(String shortCode){
-        return shortUrlRepository.getByShortCode(shortCode);
-    }
-
     public ShortUrl getRedirectUrl(String shortCode){
         ShortUrl shortUrl = getByShortCode(shortCode);
-
         if(!shortUrl.isActive())
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Срок действия истек");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                    "Срок действия истек");
 
 
         return shortUrl;
     }
 
     public ShortUrl getByShortCode(String shortCode){
-        ShortUrl shortUrl = findShortUrl(shortCode);
+        ShortUrl shortUrl = cacheService.findShortUrl(shortCode);
 
         if(shortUrl == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -78,8 +71,8 @@ public class ShortUrlsService {
 
     @CacheEvict(value = "shortUrl", key = "#shortCode")
     public boolean deleteByShortCode(String shortCode,
-                                     @AuthenticationPrincipal User authUser){
-        ShortUrl shortUrl = findShortUrl(shortCode);
+                                     User authUser){
+        ShortUrl shortUrl = cacheService.findShortUrl(shortCode);
 
         if(shortUrl == null || shortUrl.getAuthor().getEmail().equals(authUser.getEmail()) // если тот же автор
             || authUser.isAdmin()) {  // или если админ

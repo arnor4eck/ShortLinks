@@ -9,3 +9,6 @@ application:
   cookie:
     secret: ${COOKIE_SECRET:test-cookie-secret}
     age: ${COOKIE_MAX_AGE:1000}
+    httpOnly: ${COOKIE_HTTP_ONLY:true}
+    secure: ${COOKIE_SECURE:false}
+    path: ${COOKIE_PATH:/}

@@ -11,7 +11,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create  # Используй create вместо create-drop
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:

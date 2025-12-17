@@ -4,9 +4,12 @@ spring: # $env:SPRING_PROFILES_ACTIVE = "dev"
     driver-class-name: org.h2.Driver
     username: user
     password: user
+  logging:
+    level:
+      root: INFO
+      org.springframework.security: DEBUG
   cache:
     type: caffeine
-    cache-names: shortUrl
   jpa:
     hibernate:
       ddl-auto: create-drop

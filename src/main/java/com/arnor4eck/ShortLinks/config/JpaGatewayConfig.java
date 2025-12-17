@@ -26,7 +26,6 @@ import java.util.Map;
 public class JpaGatewayConfig {
     EntityManager entityManager;
 
-
     @Bean
     @Profile("dev")
     public PollerSpec pollerDev(){ // каждую минуту
@@ -46,7 +45,7 @@ public class JpaGatewayConfig {
                         e -> e.poller(poller))
                 .channel("deactivateUrlsChannel")
                 .handle(Jpa.updatingGateway(entityManager)
-                        .nativeQuery("UPDATE short_url SET is_active = false WHERE is_active = true AND expires_at <  NOW();")
+                        .nativeQuery("UPDATE short_url SET is_active = false WHERE is_active = true AND expires_at < NOW();")
                         .usePayloadAsParameterSource(false),
                         e -> e.transactional(true))
                 .handle(message -> {

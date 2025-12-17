@@ -2,12 +2,15 @@ package com.arnor4eck.ShortLinks.security;
 
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.security.cookie.CookieUtils;
+import com.arnor4eck.ShortLinks.service.UserCacheService;
+import com.arnor4eck.ShortLinks.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -21,9 +24,10 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class CookieAccessFilter extends OncePerRequestFilter {
 
-    private final UserDetailsService userDetailsService;
+    private final UserCacheService userCacheService;
 
     private final CookieUtils cookieUtils;
 
@@ -38,7 +42,7 @@ public class CookieAccessFilter extends OncePerRequestFilter {
             try {
                 if(cookieUtils.validateToken(token)){
                     String email = cookieUtils.getEmail(token);
-                    User authUser = (User) userDetailsService.loadUserByUsername(email);
+                    User authUser = userCacheService.findUserByEmail(email);
 
                     SecurityContextHolder.getContext()
                             .setAuthentication(new PreAuthenticatedAuthenticationToken(
