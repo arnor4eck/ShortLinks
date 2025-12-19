@@ -1,11 +1,13 @@
 package com.arnor4eck.ShortLinks;
 
+import com.arnor4eck.ShortLinks.config.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-//@TestPropertySource(properties = {"url.base=http://localhost:8080/"})
+@Import({TestConfig.class})
 class ShortLinksApplicationTests {
 
 	@Test

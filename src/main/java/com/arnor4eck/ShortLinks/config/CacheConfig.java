@@ -1,6 +1,6 @@
 package com.arnor4eck.ShortLinks.config;
 
-import com.arnor4eck.ShortLinks.utils.cache.CacheFactory;
+import com.arnor4eck.ShortLinks.utils.cache.factory.CacheFactory;
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class CacheConfig {
 
         for(String name : cacheNames)
             manager.registerCustomCache(name,
-                    (Cache<Object, Object>) cacheFactory.create(name, 500, 20));
+                    cacheFactory.create(name, 500, 20));
         manager.setCacheNames(List.of(cacheNames));
         return manager;
     }

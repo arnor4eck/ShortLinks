@@ -36,7 +36,6 @@ public class UserService {
 
     private final CookieUtils cookieUtils;
 
-    @PreAuthorize("authentication.getPrincipal().getEmail() == 'arnor4eck@gmail.com'")
     public User create(CreateUserRequest request){
         return userRepository.save(User.builder()
                 .username(request.username())

@@ -98,18 +98,17 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSourceDev()))
                 .exceptionHandling(handle -> {
                     handle
-                    .authenticationEntryPoint(cookieAuthenticationEntryPoint)
+                    //.authenticationEntryPoint(cookieAuthenticationEntryPoint)
                     .accessDeniedHandler(cookieAccessDeniedHandler);
                 })
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) // для H2 Console
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**/users/auth").permitAll()
                         .requestMatchers(HttpMethod.GET, "/**/short_links/{short_code}").permitAll()
                         .requestMatchers("/**/short_links/create").authenticated()
-                        .requestMatchers("/redirect_link/**").permitAll()
-                        .requestMatchers("/h2_console/**").permitAll() // разрешить H2 Console
+                        .requestMatchers("/**/users/auth", "/redirect_link/**", "/h2_console/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf(CsrfConfigurer::disable)

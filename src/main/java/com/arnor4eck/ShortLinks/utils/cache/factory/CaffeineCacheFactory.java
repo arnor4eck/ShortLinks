@@ -1,4 +1,4 @@
-package com.arnor4eck.ShortLinks.utils.cache;
+package com.arnor4eck.ShortLinks.utils.cache.factory;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CaffeineCacheFactory implements CacheFactory{
     @Override
-    public Cache<String, Object> create(String name, int size, long minutesAfterCreating){
+    public Cache<Object, Object> create(String name, int size, long minutesAfterCreating){
         return Caffeine.newBuilder()
                 .expireAfterWrite(minutesAfterCreating, TimeUnit.MINUTES)
                 .maximumSize(size)

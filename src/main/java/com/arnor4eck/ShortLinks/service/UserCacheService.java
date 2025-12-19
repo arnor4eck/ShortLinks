@@ -17,7 +17,6 @@ public class UserCacheService {
     @Cacheable(cacheNames = "users", key = "#email",
             unless = "#result == null")
     public User findUserByEmail(String email){
-        log.info("bdb");
         return (User) userDetailsService.loadUserByUsername(email);
     }
 
