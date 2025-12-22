@@ -2,17 +2,14 @@ package com.arnor4eck.ShortLinks.controller;
 
 import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlDto;
 import com.arnor4eck.ShortLinks.entity.short_url.request.CreateShortUrlRequest;
-import com.arnor4eck.ShortLinks.entity.short_url.ShortUrl;
 import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlsDtoFactory;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

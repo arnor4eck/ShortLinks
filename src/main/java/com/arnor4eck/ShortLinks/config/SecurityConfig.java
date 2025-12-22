@@ -93,11 +93,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChainDev(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSourceDev()))
-                .exceptionHandling(handle -> {
-                    handle
-                    .accessDeniedHandler(cookieAccessDeniedHandler)
-                            .authenticationEntryPoint(cookieAuthenticationEntryPoint);
-                })
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) // для H2 Console
                 )
@@ -108,6 +103,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(handle -> {
+                    handle
+                            .authenticationEntryPoint(cookieAuthenticationEntryPoint)
+                            .accessDeniedHandler(cookieAccessDeniedHandler);
+                })
                 .csrf(CsrfConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
