@@ -5,6 +5,7 @@ import com.arnor4eck.ShortLinks.entity.user.request.CreateUserRequest;
 import com.arnor4eck.ShortLinks.security.AuthorizationRequest;
 import com.arnor4eck.ShortLinks.security.AuthorizationResponse;
 import com.arnor4eck.ShortLinks.service.UserService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class UserController {
                 .body(UserDto.fromEntity(userService.create(request)));
     }
 
+    @RateLimiter(name = "authLimiter")
     @PostMapping("/auth")
     public ResponseEntity<AuthorizationResponse> auth(@RequestBody @Valid AuthorizationRequest authorizationRequest,
                                                       HttpServletResponse response){

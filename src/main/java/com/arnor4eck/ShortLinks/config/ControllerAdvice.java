@@ -1,6 +1,7 @@
 package com.arnor4eck.ShortLinks.config;
 
 import com.arnor4eck.ShortLinks.security.handlers.ExceptionResponse;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import jakarta.servlet.http.HttpServletResponse;
 import org.hibernate.JDBCException;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,16 @@ public class ControllerAdvice {
 
         response.setStatus(errorCode);
         return new ExceptionResponse(errorCode, e.getErrorMessage());
+    }
+
+    @ExceptionHandler({RequestNotPermitted.class})
+    public ExceptionResponse requestNotPermitted(RequestNotPermitted e, HttpServletResponse response){
+        int errorCode = HttpStatus.TOO_MANY_REQUESTS.value();
+
+        response.setStatus(errorCode);
+        response.setHeader("Retry-After", "3");
+
+        return new ExceptionResponse(errorCode, "Слишком много запросов. Повторите попытку");
     }
 
     @ExceptionHandler({ResponseStatusException.class})

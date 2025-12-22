@@ -1,7 +1,6 @@
 package com.arnor4eck.ShortLinks.config;
 
 import com.arnor4eck.ShortLinks.security.filter.CookieAccessFilter;
-import com.arnor4eck.ShortLinks.security.filter.RateLimitingFilter;
 import com.arnor4eck.ShortLinks.security.handlers.CookieAccessDeniedHandler;
 import com.arnor4eck.ShortLinks.security.handlers.CookieAuthenticationEntryPoint;
 import lombok.AllArgsConstructor;
@@ -40,7 +39,6 @@ public class SecurityConfig {
 
     private final CookieAuthenticationEntryPoint cookieAuthenticationEntryPoint;
 
-    private final RateLimitingFilter rateLimitingFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -116,7 +114,6 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(cookieAccessFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(rateLimitingFilter, CookieAccessFilter.class)
                 .build();
     }
 

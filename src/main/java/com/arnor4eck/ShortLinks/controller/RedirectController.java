@@ -22,6 +22,7 @@ public class RedirectController {
     private ShortUrlsService shortUrlsService;
 
     @GetMapping("/{short_code}")
+    @RateLimiter(name = "redirectLimiter")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable("short_code") String shortCode){
         ShortUrl shortUrl = shortUrlsService.getRedirectUrl(shortCode);
 
