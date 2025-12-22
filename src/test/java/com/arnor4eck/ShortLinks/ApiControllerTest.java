@@ -10,7 +10,8 @@ import com.arnor4eck.ShortLinks.entity.short_url.dto.ShortUrlsDtoFactory;
 import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.entity.user.UserDto;
-import com.arnor4eck.ShortLinks.security.CookieAccessFilter;
+import com.arnor4eck.ShortLinks.security.filter.CookieAccessFilter;
+import com.arnor4eck.ShortLinks.security.filter.RateLimitingFilter;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ApiController.class,
     excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, // исключаем фильтр безопасности
-                                        classes = CookieAccessFilter.class))
+                                        classes = {CookieAccessFilter.class, RateLimitingFilter.class}))
 @Import({ControllerAdvice.class})
 @AutoConfigureMockMvc(addFilters = false) // отключение фильтров безопасности
 class ApiControllerTest {

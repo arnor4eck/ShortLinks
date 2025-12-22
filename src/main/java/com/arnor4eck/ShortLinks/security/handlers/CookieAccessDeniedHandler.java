@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,11 +17,14 @@ import java.util.List;
 
 @Component
 public class CookieAccessDeniedHandler implements AccessDeniedHandler {
+
+    @Autowired
+    ObjectMapper mapper;
+
     @Override
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        ObjectMapper mapper = new ObjectMapper();
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -30,6 +34,6 @@ public class CookieAccessDeniedHandler implements AccessDeniedHandler {
                 mapper.writeValueAsString(
                         new ExceptionResponse(
                             HttpServletResponse.SC_FORBIDDEN,
-                            List.of(accessDeniedException.getMessage()))));
+                            "У вас нет доступа к этому ресурсу")));
     }
 }

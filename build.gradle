@@ -56,6 +56,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-integration'
 	implementation "org.springframework.integration:spring-integration-jpa"
 
+	// RateLimiter
+	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.3.0'
+
 	// Tests
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -1,10 +1,9 @@
 package com.arnor4eck.ShortLinks.config;
 
-import com.arnor4eck.ShortLinks.repository.UserRepository;
-import com.arnor4eck.ShortLinks.security.CookieAccessFilter;
+import com.arnor4eck.ShortLinks.security.filter.CookieAccessFilter;
+import com.arnor4eck.ShortLinks.security.filter.RateLimitingFilter;
 import com.arnor4eck.ShortLinks.security.handlers.CookieAccessDeniedHandler;
 import com.arnor4eck.ShortLinks.security.handlers.CookieAuthenticationEntryPoint;
-import com.arnor4eck.ShortLinks.utils.exceptions.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,11 +34,13 @@ import java.util.List;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private CookieAccessFilter cookieAccessFilter;
+    private final CookieAccessFilter cookieAccessFilter;
 
-    private CookieAccessDeniedHandler cookieAccessDeniedHandler;
+    private final CookieAccessDeniedHandler cookieAccessDeniedHandler;
 
-    private CookieAuthenticationEntryPoint cookieAuthenticationEntryPoint;
+    private final CookieAuthenticationEntryPoint cookieAuthenticationEntryPoint;
+
+    private final RateLimitingFilter rateLimitingFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -98,8 +97,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSourceDev()))
                 .exceptionHandling(handle -> {
                     handle
-                    //.authenticationEntryPoint(cookieAuthenticationEntryPoint)
-                    .accessDeniedHandler(cookieAccessDeniedHandler);
+                    .accessDeniedHandler(cookieAccessDeniedHandler)
+                            .authenticationEntryPoint(cookieAuthenticationEntryPoint);
                 })
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) // для H2 Console
@@ -117,6 +116,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(cookieAccessFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(rateLimitingFilter, CookieAccessFilter.class)
                 .build();
     }
 
