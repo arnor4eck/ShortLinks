@@ -11,13 +11,16 @@ import com.arnor4eck.ShortLinks.entity.user.role.Role;
 import com.arnor4eck.ShortLinks.entity.user.User;
 import com.arnor4eck.ShortLinks.entity.user.UserDto;
 import com.arnor4eck.ShortLinks.security.filter.CookieAccessFilter;
+import com.arnor4eck.ShortLinks.security.handlers.ExceptionResponse;
 import com.arnor4eck.ShortLinks.service.ShortUrlsService;
+import com.arnor4eck.ShortLinks.utils.exceptions.ExceptionResponseFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,8 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,6 +55,9 @@ class ApiControllerTest {
 
     @MockitoBean
     ShortUrlsDtoFactory shortUrlsDtoFactory;
+
+    @MockitoBean
+    ExceptionResponseFactory exceptionResponseFactory;
 
     ObjectMapper mapper;
 
@@ -138,6 +143,9 @@ class ApiControllerTest {
         when(shortUrlsService.getByShortCode(anyString()))
                 .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND,
                             "Ссылка с кодом short_code не найдена"));
+
+        when(exceptionResponseFactory.create(any(), anyList(), any())).thenCallRealMethod();
+        when(exceptionResponseFactory.create(any(), anyString(), any())).thenCallRealMethod();
 
         mockMvc.perform(get("/api/short_links/short_code"))
                 .andExpect(status().isNotFound())

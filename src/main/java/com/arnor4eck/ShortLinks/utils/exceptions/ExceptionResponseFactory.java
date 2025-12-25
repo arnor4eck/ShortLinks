@@ -12,7 +12,6 @@ public class ExceptionResponseFactory {
     public ExceptionResponse create(HttpStatus status,
                                     List<String> errors, HttpServletResponse response){
         response.setStatus(status.value());
-
         return new ExceptionResponse(status.value(), errors);
     }
 

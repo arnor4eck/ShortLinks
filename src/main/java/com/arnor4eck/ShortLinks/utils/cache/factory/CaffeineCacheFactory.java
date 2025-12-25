@@ -13,9 +13,9 @@ public class CaffeineCacheFactory implements CacheFactory{
     @Override
     public Cache<Object, Object> create(String name, int size, long minutesAfterCreating){
         return Caffeine.newBuilder()
+                .recordStats()
                 .expireAfterWrite(minutesAfterCreating, TimeUnit.MINUTES)
                 .maximumSize(size)
-                .recordStats()
                 .removalListener((key, value, cause) ->
                         log.info("Ключ {} был удален из кеша {}. Причина: {}", name, key, cause))
                 .build();

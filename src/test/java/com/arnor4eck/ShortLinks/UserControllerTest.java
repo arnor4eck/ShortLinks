@@ -7,6 +7,7 @@ import com.arnor4eck.ShortLinks.entity.user.request.CreateUserRequest;
 import com.arnor4eck.ShortLinks.security.filter.CookieAccessFilter;
 import com.arnor4eck.ShortLinks.security.cookie.CookieUtils;
 import com.arnor4eck.ShortLinks.service.UserService;
+import com.arnor4eck.ShortLinks.utils.exceptions.ExceptionResponseFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -34,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
             classes = CookieAccessFilter.class))
 @MockitoBeans({
         @MockitoBean(name = "cookieUtils", types = CookieUtils.class),
+        @MockitoBean(name = "exceptionResponseFactory", types = ExceptionResponseFactory.class),
         @MockitoBean(name = "authenticationManager", types = AuthenticationManager.class),
 })
 @AutoConfigureMockMvc(addFilters = false)

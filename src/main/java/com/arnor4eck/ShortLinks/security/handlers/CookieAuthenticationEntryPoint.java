@@ -29,7 +29,6 @@ public class CookieAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
-        log.info(authException.getCause().getMessage());
 
         response.getWriter().write(
                 mapper.writeValueAsString(new ExceptionResponse(
