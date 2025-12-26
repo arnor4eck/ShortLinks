@@ -40,6 +40,8 @@ dependencies {
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	// DataBase
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -105,6 +107,26 @@ def readProperties() {
 		println "Файл .env не найден в корне проекта"
 
 	return envProps
+}
+
+tasks.register('bootRunProd', org.springframework.boot.gradle.tasks.run.BootRun) {
+    group = 'application'
+    description = 'Run the Spring Boot application with prod profile'
+
+    mainClass = bootRun.mainClass
+    classpath = bootRun.classpath
+
+    //dependsOn 'test'
+
+    doFirst {
+        def envProps = readProperties()
+        envProps['spring.profiles.active'] = 'prod'
+        envProps.each { key, value -> // системные свойства в JVM Gradle
+            System.setProperty(key, value)
+        }
+
+        systemProperties = envProps  //systemProperties - это свойство задачи BootRun
+    }
 }
 
 tasks.register('bootRunDev', org.springframework.boot.gradle.tasks.run.BootRun) {

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/worklog
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5433/${DB_NAME}
+    username: ${DB_USER_NAME}
+    password: ${DB_PASSWORD}
 
   hikari:
     minimum-idle: 5

@@ -6,6 +6,7 @@ import com.arnor4eck.ShortLinks.security.handlers.CookieAuthenticationEntryPoint
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,6 +47,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Primary
     @Profile("dev")
     public CorsConfigurationSource corsConfigurationSourceDev() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -64,6 +66,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Primary
     @Profile("prod")
     public CorsConfigurationSource corsConfigurationSourceProd() { // TODO
         CorsConfiguration configuration = new CorsConfiguration();
@@ -89,10 +92,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Profile("dev")
-    public SecurityFilterChain securityFilterChainDev(HttpSecurity http) throws Exception {
+    @Profile({"dev", "prod"})
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                      CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSourceDev()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) // для H2 Console
                 )
@@ -115,11 +119,5 @@ public class SecurityConfig {
                             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(cookieAccessFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-    }
-
-    @Bean
-    @Profile("prod") // TODO
-    public SecurityFilterChain securityFilterChainProd(HttpSecurity http) throws Exception {
-        return http.build();
     }
 }

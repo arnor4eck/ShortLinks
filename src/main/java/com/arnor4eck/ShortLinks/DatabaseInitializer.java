@@ -15,7 +15,7 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-@Profile("dev")
+@Profile({"dev", "prod"})
 public class DatabaseInitializer implements CommandLineRunner {
     private UserRepository userRepository;
 
