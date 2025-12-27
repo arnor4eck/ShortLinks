@@ -39,8 +39,6 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	// DataBase
 	runtimeOnly 'com.h2database:h2'
@@ -62,6 +60,9 @@ dependencies {
 	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.3.0'
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // User Agent header parser
+    implementation 'com.github.ua-parser:uap-java:1.6.1'
 
 	// Tests
 	testImplementation 'org.springframework.security:spring-security-test'
